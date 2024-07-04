@@ -4,7 +4,7 @@ services:
     container_name: mysql_container
     environment:
       MYSQL_ROOT_PASSWORD: dbpass123
-      MYSQL_DATABASE: mvc_db
+      MYSQL_DATABASE: fractal_db
       MYSQL_USER: admin
       MYSQL_PASSWORD: dbpass123
     ports:
