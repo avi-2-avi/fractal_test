@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:5173", allowedHeaders = "*")
 @RequestMapping("/api/orders")
+@CrossOrigin(origins = "http://localhost:5173", allowedHeaders = "*")
 public class OrderController {
     private final OrderService orderService;
 
@@ -25,7 +25,7 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    public OrderIdDTO getOrderById(Integer id) {
+    public OrderIdDTO getOrderById(@PathVariable Integer id) {
         return orderService.getOrderById(id);
     }
 

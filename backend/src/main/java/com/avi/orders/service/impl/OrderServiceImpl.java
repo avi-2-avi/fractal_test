@@ -75,7 +75,7 @@ public class OrderServiceImpl implements OrderService {
                 product.getName(),
                 orderProduct.getQuantity(),
                 product.getUnit_price(),
-                orderProduct.getQuantity() * product.getUnit_price()
+                    Math.round((orderProduct.getQuantity() * product.getUnit_price()) * 100.0) / 100.0
             );
             orderProductIdDTOs.add(orderProductIdDTO);
         }
