@@ -8,6 +8,7 @@ import com.avi.orders.repository.ProductRepository;
 import com.avi.orders.service.ProductService;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -20,8 +21,18 @@ public class ProductServiceImpl implements ProductService {
         this.orderProductRepository = orderProductRepository;
     }
     @Override
-    public List<Product> getAllProducts() {
-        return productRepository.findAll();
+    public List<ProductDTO> getAllProducts() {
+        List<Product> products = productRepository.findAll();
+        List<ProductDTO> productDTOS = new ArrayList<>();
+        for (Product product : products) {
+            ProductDTO productDTO = new ProductDTO(
+                    product.getId(),
+                    product.getName(),
+                    product.getUnit_price()
+            );
+            productDTOS.add(productDTO);
+        }
+        return productDTOS;
     }
 
     @Override

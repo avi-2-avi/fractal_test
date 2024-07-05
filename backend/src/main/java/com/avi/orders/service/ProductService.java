@@ -6,7 +6,7 @@ import com.avi.orders.model.Product;
 import java.util.List;
 
 public interface ProductService {
-    List<Product> getAllProducts();
+    List<ProductDTO> getAllProducts();
     ProductDTO getProductById(Integer id);
     void addProduct(Product product);
     void editProduct(Product product);

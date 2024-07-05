@@ -8,6 +8,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class OrderProductDTO {
-    private Integer id;
+    private Integer product_id;
     private Integer quantity;
 }

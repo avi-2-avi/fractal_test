@@ -4,10 +4,11 @@ import { Header } from "../components/Header";
 import { Table } from "../components/Table";
 import { CustomInput } from "../components/CustomInput";
 import { useEffect } from "react";
-import { fetchOrderById } from "../api/ordersApi";
+import { createOrder, fetchOrderById, updateOrder } from "../api/ordersApi";
 import { useParams } from "react-router-dom";
 import { EditModal } from "../components/modals/EditModal";
 import { ProductModal } from "../components/modals/ProductModal";
+import { useNavigate } from "react-router-dom";
 
 export const OrderPage = () => {
   const [orderProducts, setOrderProducts] = useState([]);
@@ -21,6 +22,7 @@ export const OrderPage = () => {
   const [selectedRow, setSelectedRow] = useState(null);
 
   const { id } = useParams();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getOrderDetails = async () => {
@@ -29,8 +31,8 @@ export const OrderPage = () => {
           const data = await fetchOrderById(id);
           setOrderID(data.order_number);
           setDate(data.created_at.split("T")[0]);
-            setNumProducts(data.product_quantity);
-            setFinalPrice(data.final_price);
+          setNumProducts(data.product_quantity);
+          setFinalPrice(data.final_price);
           setStatus(data.status);
           setOrderProducts(data.orderProductList);
         }
@@ -47,20 +49,52 @@ export const OrderPage = () => {
   };
 
   const onDeleteOrProdClick = (row) => {
-      try {
-        const newOrderProducts = orderProducts.filter(
-            (product) => product.product_id !== row.product_id
-        );
-        setOrderProducts(newOrderProducts);
-
-      } catch (error) {
-        console.error("Error deleting order:", error);
-      }
+    try {
+      const newOrderProducts = orderProducts.filter(
+        (product) => product.product_id !== row.product_id
+      );
+      setOrderProducts(newOrderProducts);
+    } catch (error) {
+      console.error("Error deleting order:", error);
+    }
   };
 
-  const onSaveClick = () => {};
+  const onSaveClick = () => {
+    if(id) {    
+      const order = {
+        id: id,
+        order_number: orderID,
+        status: status,
+        created_at: date,
+        product_quantity: numProducts,
+        final_price: finalPrice,
+        orderProducts: orderProducts.map((product) => ({
+          product_id: product.product_id,
+          quantity: product.quantity,
+        })),
+      };
 
-  const onSaveProduct = () => {};
+      updateOrder(order);
+      navigate("/my-orders");
+    } else {
+      const order = {
+        order_number: orderID,
+        status: status,
+        orderProducts: orderProducts.map((product) => ({
+          product_id: product.product_id,
+          quantity: product.quantity,
+        })),
+      }
+
+      createOrder(order);
+      navigate("/my-orders");
+    }
+  };
+
+  const onSaveProduct = (newProduct) => {
+    setOrderProducts([...orderProducts, newProduct]);
+    setIsModalProductOpen(false);
+  };
 
   const onSaveEdit = (editedRow) => {
     const updatedOrderProducts = orderProducts.map((product) =>
@@ -69,7 +103,6 @@ export const OrderPage = () => {
     setOrderProducts(updatedOrderProducts);
     setIsModalEditOpen(false);
   };
-
 
   const orderProductsColumns = [
     { header: "ID", accessor: "product_id" },
@@ -120,7 +153,11 @@ export const OrderPage = () => {
         }}
       >
         <h1>Orders List</h1>
-        <CustomButton text="ADD PRODUCT" type="primary"></CustomButton>
+        <CustomButton
+          text="ADD PRODUCT"
+          type="primary"
+          onClick={() => setIsModalProductOpen(true)}
+        ></CustomButton>
       </div>
       <div style={{ width: "100%", display: "flex", flexDirection: "row" }}>
         <div id="form" style={{ width: "25%", paddingRight: "40px" }}>
@@ -182,8 +219,8 @@ export const OrderPage = () => {
       <ProductModal
         isOpen={isModalProductOpen}
         onRequestClose={() => setIsModalProductOpen(false)}
-        onConfirm={onSaveProduct()}
-        message="Are you sure you want to delete this order?"
+        onConfirm={onSaveProduct}
+        message="Add a new product"
       />
     </div>
   );

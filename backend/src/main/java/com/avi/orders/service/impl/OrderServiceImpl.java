@@ -115,6 +115,34 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public void editOrder(OrderDTO orderDTO) {
+        Order order = orderRepository.findById(orderDTO.getId()).orElse(null);
+        if (order == null) {
+            throw new RuntimeException("Order not found");
+        }
+        order.setOrder_number(orderDTO.getOrder_number());
+        order.setStatus(orderDTO.getStatus());
+        orderRepository.save(order);
+
+        if (orderDTO.getOrderProducts() != null) {
+            for (OrderProductDTO orderProductDTO : orderDTO.getOrderProducts()) {
+                Product product = productRepository.findById(orderProductDTO.getProduct_id()).orElse(null);
+                if (product == null) {
+                    OrderProduct orderProduct = orderProductRepository.findAllByOrderIdAndProductId(order.getId(), orderProductDTO.getProduct_id());
+                    if (orderProduct != null) {
+                        orderProductRepository.delete(orderProduct);
+                    }
+                } else {
+                    OrderProduct orderProduct = orderProductRepository.findAllByOrderIdAndProductId(order.getId(), orderProductDTO.getProduct_id());
+                    if (orderProduct == null) {
+                        orderProduct = new OrderProduct();
+                        orderProduct.setOrder(order);
+                        orderProduct.setProduct(product);
+                    }
+                    orderProduct.setQuantity(orderProductDTO.getQuantity());
+                    orderProductRepository.save(orderProduct);
+                }
+            }
+        }
     }
 
     @Override

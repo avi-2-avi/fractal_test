@@ -13,7 +13,5 @@ public class OrderDTO {
     private String order_number;
     private String status;
     private String created_at;
-    private Integer product_quantity;
-    private Double final_price;
     private List<OrderProductDTO> orderProducts;
 }
