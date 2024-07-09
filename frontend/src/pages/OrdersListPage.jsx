@@ -18,7 +18,10 @@ export const OrdersListPage = () => {
     const getOrders = async () => {
       try {
         const data = await fetchOrders();
-        setOrders(data);
+        const filteredOrders = data.filter(
+          (order) => order.status !== "Completed"
+        );
+        setOrders(filteredOrders);
       } catch (error) {
         console.error("Error fetching orders:", error);
       }
@@ -52,29 +55,35 @@ export const OrdersListPage = () => {
     {
       header: "Options",
       render: (row) => (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              flexDirection: "row",
-              gap: "8px",
-            }}
-          >
-            <CustomButton text="EDIT" 
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            flexDirection: "row",
+            gap: "8px",
+          }}
+        >
+          <CustomButton
+            text="EDIT"
             onClick={() => onEditOrderClick(row)}
-             type="secondary"></CustomButton>
-            <CustomButton
-              text="DELETE"
-              type="danger"
-              onClick={() => onDeleteOrderClick(row)} 
-            ></CustomButton>
-          </div>
+            type="secondary"
+          ></CustomButton>
+          <CustomButton
+            text="DELETE"
+            type="danger"
+            onClick={() => onDeleteOrderClick(row)}
+          ></CustomButton>
+        </div>
       ),
     },
   ];
 
   const onNewOrderClick = () => {
     navigate(`/add-order`);
+  };
+
+  const onRedirectProduct = () => {
+    navigate(`/products`);
   };
 
   const onEditOrderClick = (row) => {
@@ -112,7 +121,18 @@ export const OrdersListPage = () => {
         }}
       >
         <h1>Orders List</h1>
-        <CustomButton text="NEW ORDER" onClick={onNewOrderClick} type="primary"></CustomButton>
+        <div style={{ display: "flex", flexDirection: "row", gap: "8px" }}>
+          <CustomButton
+            text="PRODUCTS"
+            onClick={onRedirectProduct}
+            type="secondary"
+          ></CustomButton>
+          <CustomButton
+            text="NEW ORDER"
+            onClick={onNewOrderClick}
+            type="primary"
+          ></CustomButton>
+        </div>
       </div>
 
       <Table columns={orderColumns} data={orders} />

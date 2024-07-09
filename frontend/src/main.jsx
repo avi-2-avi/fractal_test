@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import { OrdersListPage } from "./pages/OrdersListPage";
 import { OrderPage } from "./pages/OrderPage";
+import { ProductsListPage } from "./pages/ProductsListPage";
 
 const router = createBrowserRouter([
   {
@@ -21,6 +22,10 @@ const router = createBrowserRouter([
   {
     path: "/add-order",
     element: <OrderPage />,
+  },
+  {
+    path: "/products",
+    element: <ProductsListPage />,
   },
   {
     path: "/*",

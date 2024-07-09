@@ -91,6 +91,10 @@ export const OrderPage = () => {
     }
   };
 
+  const onNavigateBack = () => {
+    navigate("/my-orders");
+  };
+
   const onSaveProduct = (newProduct) => {
     setOrderProducts([...orderProducts, newProduct]);
     setIsModalProductOpen(false);
@@ -153,11 +157,18 @@ export const OrderPage = () => {
         }}
       >
         <h1>Orders List</h1>
+        <div style={{display: "flex", flexDirection: "row", gap: "8px" }}>
+        <CustomButton
+          text="RETURN"
+          type="secondary"
+          onClick={() => onNavigateBack()}
+        ></CustomButton>
         <CustomButton
           text="ADD PRODUCT"
           type="primary"
           onClick={() => setIsModalProductOpen(true)}
         ></CustomButton>
+        </div>
       </div>
       <div style={{ width: "100%", display: "flex", flexDirection: "row" }}>
         <div id="form" style={{ width: "25%", paddingRight: "40px" }}>

@@ -3,7 +3,7 @@ import { CustomButton } from "../components/CustomButton";
 import { Table } from "../components/Table";
 import { useState } from "react";
 import { Header } from "../components/Header";
-import { deleteproduct, fetchproducts } from "../api/productsApi";
+import { deleteProduct, fetchProducts } from "../api/productsApi";
 import { useNavigate } from "react-router-dom";
 import { ConfirmationModal } from "../components/modals/ConfirmationModal";
 
@@ -17,7 +17,7 @@ export const ProductsListPage = () => {
   useEffect(() => {
     const getproducts = async () => {
       try {
-        const data = await fetchproducts();
+        const data = await fetchProducts();
         setproducts(data);
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -31,15 +31,6 @@ export const ProductsListPage = () => {
     { header: "ID", accessor: "id" },
     { header: "Name", accessor: "name" },
     { header: "Unit Price", accessor: "unit_price" },
-    {
-      header: "Status",
-      accessor: "status",
-      render: (row) => (
-        <>
-          <CustomButton text={row.status} type="secondary"></CustomButton>
-        </>
-      ),
-    },
     {
       header: "Options",
       render: (row) => (
@@ -65,22 +56,26 @@ export const ProductsListPage = () => {
   ];
 
   const onNewProductClick = () => {
-    navigate(`/add-product`);
+    alert("New Product");
   };
 
   const onEditProductClick = (row) => {
-    navigate(`/add-product/${row.id}`);
+    alert("Edit Product");
   };
+
+  const onNavigateBack = () => {
+    navigate("/my-orders");
+  }
 
   const onDeleteProductClick = (row) => {
     setSelectedRow(row);
-    setIsModalOpen(true);
+    alert("Delete Product");
   };
 
   const onConfirmDelete = async () => {
     if (selectedRow) {
       try {
-        await deleteproduct(selectedRow.id);
+        await deleteProduct(selectedRow.id);
         setproducts(products.filter((product) => product.id !== selectedRow.id));
         setIsModalOpen(false);
       } catch (error) {
@@ -103,6 +98,18 @@ export const ProductsListPage = () => {
         }}
       >
         <h1>Products List</h1>
+        <div style={{ display: "flex", flexDirection: "row", gap: "8px" }}>
+          <CustomButton
+            text="RETURN"
+            onClick={onNavigateBack}
+            type="secondary"
+          ></CustomButton>
+          <CustomButton
+            text="NEW PRODUCT"
+            onClick={onNewProductClick}
+            type="primary"
+          ></CustomButton>
+        </div>
       </div>
 
       <Table columns={productColumns} data={products} />

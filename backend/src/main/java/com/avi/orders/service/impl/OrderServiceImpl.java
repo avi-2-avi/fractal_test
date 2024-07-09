@@ -65,7 +65,6 @@ public class OrderServiceImpl implements OrderService {
 
         List<OrderProductIdDTO> orderProductIdDTOs = new ArrayList<>();
         for (OrderProduct orderProduct : orderProducts) {
-
             Product product = orderProduct.getProduct();
             totalQuantity += orderProduct.getQuantity();
             finalPrice += orderProduct.getQuantity() * product.getUnit_price();
@@ -123,24 +122,28 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(orderDTO.getStatus());
         orderRepository.save(order);
 
-        if (orderDTO.getOrderProducts() != null) {
+        for (OrderProductDTO orderProductDTO : orderDTO.getOrderProducts()) {
+            OrderProduct orderProduct = orderProductRepository.findAllByOrderIdAndProductId(order.getId(), orderProductDTO.getProduct_id());
+            if (orderProduct == null) {
+                orderProduct = new OrderProduct();
+                orderProduct.setOrder(order);
+                orderProduct.setProduct(productRepository.findById(orderProductDTO.getProduct_id()).orElseThrow(() -> new RuntimeException("Product not found")));
+            }
+            orderProduct.setQuantity(orderProductDTO.getQuantity());
+            orderProductRepository.save(orderProduct);
+        }
+
+        List<OrderProduct> currentOrderProducts = orderProductRepository.findAllByOrderId(order.getId());
+        for (OrderProduct currentOrderProduct : currentOrderProducts) {
+            boolean found = false;
             for (OrderProductDTO orderProductDTO : orderDTO.getOrderProducts()) {
-                Product product = productRepository.findById(orderProductDTO.getProduct_id()).orElse(null);
-                if (product == null) {
-                    OrderProduct orderProduct = orderProductRepository.findAllByOrderIdAndProductId(order.getId(), orderProductDTO.getProduct_id());
-                    if (orderProduct != null) {
-                        orderProductRepository.delete(orderProduct);
-                    }
-                } else {
-                    OrderProduct orderProduct = orderProductRepository.findAllByOrderIdAndProductId(order.getId(), orderProductDTO.getProduct_id());
-                    if (orderProduct == null) {
-                        orderProduct = new OrderProduct();
-                        orderProduct.setOrder(order);
-                        orderProduct.setProduct(product);
-                    }
-                    orderProduct.setQuantity(orderProductDTO.getQuantity());
-                    orderProductRepository.save(orderProduct);
+                if (currentOrderProduct.getProduct().getId().equals(orderProductDTO.getProduct_id())) {
+                    found = true;
+                    break;
                 }
+            }
+            if (!found) {
+                orderProductRepository.delete(currentOrderProduct);
             }
         }
     }
