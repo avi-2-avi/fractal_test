@@ -24,6 +24,7 @@ Follow these steps to set up and run the Fractal Test GitHub repository:
 
    ```bash
    cd frontend
+   npm install
    npx vite
    ```
 
